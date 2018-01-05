@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
 import { View } from 'react-native';
 import firebase from 'firebase';
-import { Header } from './components/common';
+import { Header, Button, Spinner } from './components/common';
 import LoginForm from './components/LoginForm';
 
 class App extends Component {
   // init state, not logged in to the system
-  state = { loggedIn: false };
+  state = { loggedIn: null, headerContent: '' };
   // firebase setup
   componentWillMount() {
     firebase.initializeApp({
@@ -19,20 +19,36 @@ class App extends Component {
     });
 
     // event handler to handle if the user signed in or out
-    firebase.auth().onAuthStateChenged((user) => {
+    firebase.auth().onAuthStateChanged((user) => {
       if (user) {
-        this.setState({ loggedIn: true });
+        this.setState({ loggedIn: true, headerContent: user.uid });
       } else {
-        this.setState({ loggedIn: false });
+        this.setState({ loggedIn: false, headerContent: 'Auth' });
       }
     });
+  }
+
+  // based on the loggedIn state to render loginForm or another content
+  rednerContent() {
+    switch (this.state.loggedIn) {
+      case true:
+        return (
+          <Button onPress={() => firebase.auth().signOut()}>
+            Log Out
+          </Button>
+        );
+      case false:
+        return <LoginForm />;
+      default:
+        return <Spinner size='large' />;
+    }
   }
 
   render() {
     return (
       <View>
-        <Header headerText="Auth" />
-        <LoginForm />
+        <Header headerText={this.state.headerContent} />
+        {this.rednerContent()}
       </View>
     );
   }
