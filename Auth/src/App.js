@@ -29,7 +29,7 @@ class App extends Component {
   }
 
   // based on the loggedIn state to render loginForm or another content
-  rednerContent() {
+  renderContent() {
     switch (this.state.loggedIn) {
       case true:
         return (
@@ -48,7 +48,7 @@ class App extends Component {
     return (
       <View>
         <Header headerText={this.state.headerContent} />
-        {this.rednerContent()}
+        {this.renderContent()}
       </View>
     );
   }
